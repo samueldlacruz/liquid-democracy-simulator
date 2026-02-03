@@ -14,12 +14,12 @@ const proposals = [
 ];
 
 const characters = {
-  ana:     { name: "Ana",     color: "bg-pink-500",   role: "Ingeniera ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
-  bruno:   { name: "Bruno",   color: "bg-blue-500",   role: "Especialista en educación", expertIn: "educacion", votes: {}, delegation: {} },
-  carla:   { name: "Carla",   color: "bg-green-500",  role: "Ciudadana informada", expertIn: null, votes: {}, delegation: {} },
-  maria:   { name: "María",   color: "bg-orange-500", role: "Activista ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
-  pedro:   { name: "Pedro",   color: "bg-yellow-500", role: "Ciudadano apático", expertIn: null, votes: {}, delegation: {} },
-  abigail: { name: "Abigail", color: "bg-purple-500", role: "Investigadora académica", expertIn: "educacion", votes: {}, delegation: {} }
+  ana:     { name: "ana",     color: "bg-pink-500",   role: "Ingeniera ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
+  bruno:   { name: "bruno",   color: "bg-blue-500",   role: "Especialista en educación", expertIn: "educacion", votes: {}, delegation: {} },
+  carla:   { name: "carla",   color: "bg-green-500",  role: "Ciudadana informada", expertIn: null, votes: {}, delegation: {} },
+  maria:   { name: "maria",   color: "bg-orange-500", role: "Activista ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
+  pedro:   { name: "pedro",   color: "bg-yellow-500", role: "Ciudadano apático", expertIn: null, votes: {}, delegation: {} },
+  abigail: { name: "abigail", color: "bg-purple-500", role: "Investigadora académica", expertIn: "educacion", votes: {}, delegation: {} }
 };
 
 // inicializar votos
@@ -130,7 +130,7 @@ function render() {
             </div>
 
             <div>
-              <div class="font-semibold">${c.name}</div>
+              <div class="font-semibold text-capitalize">${c.name}</div>
               <div class="text-xs text-gray-600 font-medium">${c.role}</div>
 
               <select
