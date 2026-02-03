@@ -122,7 +122,7 @@ function render() {
         <td class="p-4 sticky left-0 bg-white z-10">
           <div class="flex gap-3 min-w-[220px]">
             <div class="relative">
-              <img src="img/${c.name}.png" class="w-16 h-16 rounded-full border-4 ${c.color}" />
+              <img src="/img/${c.name}.png" class="w-16 h-16 rounded-full border-4 ${c.color}" />
               ${isExpert ? `
                 <span class="absolute -bottom-1 -right-1 bg-black text-white text-[10px] px-2 py-0.5 rounded-full">
                   Experto
