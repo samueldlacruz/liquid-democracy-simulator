@@ -39,10 +39,17 @@ function resolveFinalVoter(personId, proposal, visited = new Set()) {
 
   if (person.votes[proposal.id] !== null) return personId;
 
-  const delegate = person.delegation[proposal.topic];
-  if (!delegate) return personId;
+  const proposalDelegate = person.delegation[proposal.id];
+  if (proposalDelegate) {
+    return resolveFinalVoter(proposalDelegate, proposal, visited);
+  }
 
-  return resolveFinalVoter(delegate, proposal, visited);
+  const topicDelegate = person.delegation[proposal.topic];
+  if (topicDelegate) {
+    return resolveFinalVoter(topicDelegate, proposal, visited);
+  }
+
+  return personId;
 }
 
 function getDelegatedVotes(targetId, proposalId) {
@@ -62,6 +69,45 @@ function getVoteVisual(vote, delegated) {
   if (vote === "abstain") return { bg: "bg-gray-400", icon: "○", label: "Abstención" };
   if (delegated) return { bg: "bg-slate-400", icon: "↗", label: "Delegado" };
   return { bg: "bg-gray-200", icon: "", label: "Sin decisión" };
+}
+
+function calculateProposalResult(proposal) {
+  const result = { yes: 0, no: 0, abstain: 0 };
+
+  Object.keys(characters).forEach(id => {
+    const finalVoterId = resolveFinalVoter(id, proposal);
+    const vote = characters[finalVoterId].votes[proposal.id];
+    if (!vote) return;
+
+    // cada persona aporta exactamente 1 voto
+    result[vote] += 1;
+  });
+
+  return result;
+}
+
+function getDelegationChain(personId, proposal) {
+  const chain = [];
+  let current = personId;
+  const visited = new Set();
+
+  while (!visited.has(current)) {
+    visited.add(current);
+    const person = characters[current];
+
+    if (person.votes[proposal.id] !== null) break;
+
+    const delegate =
+      person.delegation[proposal.id] ||
+      person.delegation[proposal.topic];
+
+    if (!delegate) break;
+
+    chain.push(`${person.name} → ${characters[delegate].name}`);
+    current = delegate;
+  }
+
+  return chain;
 }
 
 /* =====================
@@ -105,7 +151,7 @@ function render() {
           ${activeProposals.map(p => `
             <th class="p-4 text-center">
               <div class="font-semibold">${p.title}</div>
-              <div class="text-xs text-gray-500">${p.topic.replace("_"," ")}/Iniciativa</div>
+              <div class="text-xs text-gray-500">Iniciativa</div>
             </th>
           `).join("")}
         </tr>
@@ -123,27 +169,19 @@ function render() {
           <div class="flex gap-3 min-w-[220px]">
             <div class="relative">
               <img src="/img/${c.name}.png" class="w-16 h-16 rounded-full border-4 ${c.color}" />
-              ${isExpert ? `
-                <span class="absolute -bottom-1 -right-1 bg-black text-white text-[10px] px-2 py-0.5 rounded-full">
-                  Experto
-                </span>` : ``}
+              ${isExpert ? `<span class="absolute -bottom-1 -right-1 bg-black text-white text-[10px] px-2 py-0.5 rounded-full">Experto</span>` : ``}
             </div>
-
             <div>
               <div class="font-semibold capitalize">${c.name}</div>
               <div class="text-xs text-gray-600 font-medium">${c.role}</div>
 
-              <select
-                class="mt-2 text-xs border rounded px-2 py-1 w-full"
+              <select class="mt-2 text-xs border rounded px-2 py-1 w-full"
                 onchange="setDelegation('${id}', this.value)">
                 <option value="">Sin delegar</option>
                 ${Object.keys(characters)
                   .filter(o => o !== id)
-                  .map(o => `
-                    <option value="${o}" ${c.delegation[currentTopic] === o ? "selected" : ""}>
-                      Delegar en ${characters[o].name}
-                    </option>
-                  `).join("")}
+                  .map(o => `<option value="${o}" ${c.delegation[currentTopic] === o ? "selected" : ""}>Delegar en ${characters[o].name}</option>`)
+                  .join("")}
               </select>
             </div>
           </div>
@@ -155,31 +193,38 @@ function render() {
       const finalVoter = characters[finalVoterId];
       const visual = getVoteVisual(finalVoter.votes[p.id], finalVoterId !== id);
       const received = getDelegatedVotes(id, p.id);
+      const chain = getDelegationChain(id, p);
+      const result = calculateProposalResult(p);
 
       html += `
         <td class="p-4 text-center">
-          <div class="flex flex-col items-center gap-1 min-w-[110px]">
+          <div class="flex flex-col items-center gap-1 min-w-[120px]">
 
-            <div class="w-10 h-10 rounded-full flex items-center justify-center
-                        text-white font-bold ${visual.bg}">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${visual.bg}">
               ${visual.icon}
             </div>
 
             <div class="text-[11px] text-gray-600">${visual.label}</div>
 
-            ${received > 0 ? `
-              <div class="text-xs font-semibold text-blue-600">
-                +${received} delegados
-              </div>` : ``}
+            ${received > 0 ? `<div class="text-xs font-semibold text-blue-600">+${received} delegados</div>` : ``}
 
-            <select
-              class="mt-1 text-xs border rounded px-2 py-1"
+            ${chain.length ? `<div class="text-[10px] text-gray-500">${chain.join("<br/>")}</div>` : ``}
+
+            <select class="mt-1 text-xs border rounded px-2 py-1"
               onchange="setVote('${id}','${p.id}',this.value)">
               <option value="">Delegar</option>
               <option value="yes" ${c.votes[p.id]==="yes"?"selected":""}>Sí</option>
               <option value="no" ${c.votes[p.id]==="no"?"selected":""}>No</option>
               <option value="abstain" ${c.votes[p.id]==="abstain"?"selected":""}>Abs</option>
             </select>
+
+            <div class="mt-2 text-xs bg-gray-50 rounded p-2 w-full">
+              <div class="flex justify-between">
+                <span class="text-green-600">✔ ${result.yes}</span>
+                <span class="text-red-600">✖ ${result.no}</span>
+                <span class="text-gray-500">○ ${result.abstain}</span>
+              </div>
+            </div>
 
           </div>
         </td>
@@ -218,9 +263,8 @@ function setDelegation(id, value) {
 
 function resetState() {
   Object.values(characters).forEach(c => {
-    c.votes = {};
+    Object.keys(c.votes).forEach(k => c.votes[k] = null);
     c.delegation = {};
-    proposals.forEach(p => c.votes[p.id] = null);
   });
   render();
 }
