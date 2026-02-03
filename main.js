@@ -98,7 +98,7 @@ function render() {
 
   let html = `
   <div class="overflow-x-auto">
-    <table class="min-w-[900px] border-collapse text-sm">
+    <table class="min-w-[900px] w-full border-collapse text-sm">
       <thead>
         <tr class="bg-gray-100">
           <th class="p-4 text-left sticky left-0 bg-gray-100 z-10">Persona</th>
