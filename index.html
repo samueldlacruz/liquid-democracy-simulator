@@ -1,74 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Democracia Líquida – Visual</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-<style>
-    body {
-        font-family: 'Poppins', sans-serif;
-    }
-</style>
-</head>
-<body class="bg-slate-100 p-6">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Democracia Líquida – Visual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-100 p-6 max-w-full md:max-w-7xl mx-auto">
+    <h1 class="text-5xl mt-10 mb-8 text-center font-bold mb-6">
+      <span class="text-blue-500">Simulador</span>
+      <br />
+      de Democracia Líquida
+    </h1>
 
-<h1 class="text-5xl mt-10 mb-8 text-center font-bold mb-6">
-    <span class="text-blue-500">Simulador</span>
-    <br/>
-   de Democracia Líquida
-</h1>
+    <div class="mb-6 flex items-center gap-4">
+      <span class="font-semibold">Tópico:</span>
 
+      <div
+        class="flex items-center gap-2 bg-white rounded-full shadow px-2 py-1"
+      >
+        <button
+          id="btn-medio"
+          onclick="setTopic('medio_ambiente')"
+          class="px-4 py-1 rounded-full text-sm font-semibold transition"
+        >
+          🌱 Medio Ambiente
+        </button>
 
-<div class="mb-6 flex items-center gap-4">
-  <span class="font-semibold">Tópico:</span>
-  
-  <div class="flex items-center gap-2 bg-white rounded-full shadow px-2 py-1">
-    <button
-      id="btn-medio"
-      onclick="setTopic('medio_ambiente')"
-      class="px-4 py-1 rounded-full text-sm font-semibold transition">
-      🌱 Medio Ambiente
-    </button>
+        <button
+          id="btn-edu"
+          onclick="setTopic('educacion')"
+          class="px-4 py-1 rounded-full text-sm font-semibold transition"
+        >
+          📚 Educación
+        </button>
+      </div>
 
-    <button
-      id="btn-edu"
-      onclick="setTopic('educacion')"
-      class="px-4 py-1 rounded-full text-sm font-semibold transition">
-      📚 Educación
-    </button>
-  </div>
+      <button
+        onclick="resetState()"
+        class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500 text-white transition"
+      >
+        Reset
+      </button>
+    </div>
 
-  <button onclick="resetState()" class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500 text-white transition">
-    Reset
-  </button>
-</div>
+    <div id="app" class="bg-white rounded-xl shadow p-4 overflow-x-auto"></div>
 
-<div id="app" class="bg-white rounded-xl shadow p-4 overflow-x-auto"></div>
+    <section class="mt-8 bg-white rounded-xl shadow p-6 w-full">
+      <h2 class="text-2xl font-bold mb-3">¿Qué es la Democracia Líquida?</h2>
 
-<section class="mt-8 bg-white rounded-xl shadow p-6 w-full">
-  <h2 class="text-2xl font-bold mb-3">¿Qué es la Democracia Líquida?</h2>
+      <p class="text-gray-700 mb-3">
+        La democracia líquida es un modelo de participación ciudadana que
+        combina el voto directo con la delegación flexible del voto.
+      </p>
 
-  <p class="text-gray-700 mb-3">
-    La democracia líquida es un modelo de participación ciudadana que combina
-    el voto directo con la delegación flexible del voto.
-  </p>
+      <ul class="list-disc pl-6 text-gray-700 mb-3 space-y-1">
+        <li>Cada persona puede votar directamente en una propuesta.</li>
+        <li>También puede delegar su voto en alguien de confianza.</li>
+        <li>
+          La delegación puede hacerse por tópico (ej. medio ambiente o
+          educación).
+        </li>
+        <li>El voto directo siempre tiene prioridad sobre la delegación.</li>
+        <li>
+          Las delegaciones pueden cambiarse o retirarse en cualquier momento.
+        </li>
+      </ul>
 
-  <ul class="list-disc pl-6 text-gray-700 mb-3 space-y-1">
-    <li>Cada persona puede votar directamente en una propuesta.</li>
-    <li>También puede delegar su voto en alguien de confianza.</li>
-    <li>La delegación puede hacerse por tópico (ej. medio ambiente o educación).</li>
-    <li>El voto directo siempre tiene prioridad sobre la delegación.</li>
-    <li>Las delegaciones pueden cambiarse o retirarse en cualquier momento.</li>
-  </ul>
-
-  <p class="text-gray-700">
-    Este simulador muestra cómo fluye el poder de decisión, quién vota realmente
-    cada propuesta y cómo los expertos influyen sin concentrar el poder.
-  </p>
-</section>
-<script src="./main.js"></script>
-</body>
+      <p class="text-gray-700">
+        Este simulador muestra cómo fluye el poder de decisión, quién vota
+        realmente cada propuesta y cómo los expertos influyen sin concentrar el
+        poder.
+      </p>
+    </section>
+    <script src="./main.js"></script>
+  </body>
 </html>

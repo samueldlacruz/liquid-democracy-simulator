@@ -220,6 +220,7 @@ function resetState() {
   Object.values(characters).forEach(c => {
     c.votes = {};
     c.delegation = {};
+    proposals.forEach(p => c.votes[p.id] = null);
   });
   render();
 }
