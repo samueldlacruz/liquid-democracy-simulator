@@ -130,7 +130,7 @@ function render() {
             </div>
 
             <div>
-              <div class="font-semibold text-capitalize">${c.name}</div>
+              <div class="font-semibold capitalize">${c.name}</div>
               <div class="text-xs text-gray-600 font-medium">${c.role}</div>
 
               <select
