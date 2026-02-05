@@ -10,20 +10,73 @@ const proposals = [
   { id: "ma3", title: "Programa nacional de reforestación urbana", topic: "medio_ambiente", status: "open" },
   { id: "ed1", title: "Capacitación docente obligatoria cada 3 años", topic: "educacion", status: "open" },
   { id: "ed2", title: "Educación digital desde el nivel primario", topic: "educacion", status: "open" },
-  { id: "ed3", title: "Financiamiento público para investigación universitaria", topic: "educacion", status: "open" }
+  { id: "ed3", title: "Financiamiento público para investigación universitaria", topic: "educacion", status: "open" },
+  { id: "sa1", title: "Cobertura universal de atención primaria", topic: "salud", status: "open" },
+  { id: "sa2", title: "Regulación del precio de medicamentos esenciales", topic: "salud", status: "open" },
+  { id: "sa3", title: "Programa nacional de salud mental", topic: "salud", status: "open" }
 ];
 
-
 const characters = {
-  ana: { name: "ana", color: "bg-pink-500", role: "Ingeniera ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
-  bruno: { name: "bruno", color: "bg-blue-500", role: "Especialista en educación", expertIn: "educacion", votes: {}, delegation: {} },
-  carla: { name: "carla", color: "bg-green-500", role: "Ciudadana informada", expertIn: null, votes: {}, delegation: {} },
-  maria: { name: "maria", color: "bg-orange-500", role: "Activista ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
-  pedro: { name: "pedro", color: "bg-yellow-500", role: "Ciudadano apático", expertIn: null, votes: {}, delegation: {} },
-  abigail: { name: "abigail", color: "bg-purple-500", role: "Investigadora académica", expertIn: "educacion", votes: {}, delegation: {} }
+  ana: {
+    name: "ana",
+    color: "bg-pink-500",
+    role: "Ingeniera ambiental",
+    expertIn: "medio_ambiente",
+    votes: {},
+    delegation: {}
+  },
+  bruno: {
+    name: "bruno",
+    color: "bg-blue-500",
+    role: "Especialista en educación",
+    expertIn: "educacion",
+    votes: {},
+    delegation: {}
+  },
+  carla: {
+    name: "carla",
+    color: "bg-green-500",
+    role: "Ciudadana informada",
+    expertIn: null,
+    votes: {},
+    delegation: {}
+  },
+  maria: {
+    name: "maria",
+    color: "bg-orange-500",
+    role: "Activista ambiental",
+    expertIn: "medio_ambiente",
+    votes: {},
+    delegation: {}
+  },
+  pedro: {
+    name: "pedro",
+    color: "bg-yellow-500",
+    role: "Ciudadano apático",
+    expertIn: null,
+    votes: {},
+    delegation: {}
+  },
+  abigail: {
+    name: "abigail",
+    color: "bg-purple-500",
+    role: "Investigadora académica",
+    expertIn: "educacion",
+    votes: {},
+    delegation: {}
+  },
+
+  // 👩‍⚕️ Nuevo personaje experto en salud
+  sofia: {
+    name: "sofia",
+    color: "bg-red-500",
+    role: "Médica de salud pública",
+    expertIn: "salud",
+    votes: {},
+    delegation: {}
+  }
 };
 
-// inicializar votos
 Object.values(characters).forEach(c => {
   proposals.forEach(p => c.votes[p.id] = null);
 });
@@ -111,6 +164,22 @@ function getDelegationChain(personId, proposal) {
   return chain;
 }
 
+function isProposalComplete(proposal) {
+  return Object.keys(characters).every(id => {
+    const finalVoterId = resolveFinalVoter(id, proposal);
+    return characters[finalVoterId].votes[proposal.id] !== null;
+  });
+}
+
+function updateProposalStatus(proposal) {
+  if (proposal.status === "closed") return;
+
+  if (isProposalComplete(proposal)) {
+    proposal.status = "closed";
+  }
+}
+
+
 /* =====================
    UI STATE
 ===================== */
@@ -122,18 +191,24 @@ function setTopic(topic) {
 }
 
 function updateTopicUI() {
-  const btnMedio = document.getElementById("btn-medio");
-  const btnEdu = document.getElementById("btn-edu");
+  const topics = ["medio_ambiente", "educacion", "salud"];
 
-  btnMedio.className =
-    currentTopic === "medio_ambiente"
-      ? "px-4 py-1 rounded-full text-sm font-semibold bg-green-500 text-white"
-      : "px-4 py-1 rounded-full text-sm font-semibold text-gray-600";
+  topics.forEach(topic => {
+    const btn = document.getElementById(
+      topic === "medio_ambiente"
+        ? "btn-medio"
+        : topic === "educacion"
+        ? "btn-edu"
+        : "btn-salud"
+    );
 
-  btnEdu.className =
-    currentTopic === "educacion"
-      ? "px-4 py-1 rounded-full text-sm font-semibold bg-blue-500 text-white"
-      : "px-4 py-1 rounded-full text-sm font-semibold text-gray-600";
+    if (!btn) return;
+
+    btn.className =
+      currentTopic === topic
+        ? "px-4 py-1 rounded-full text-sm font-semibold bg-black text-white"
+        : "px-4 py-1 rounded-full text-sm font-semibold text-gray-600";
+  });
 }
 
 /* =====================
@@ -142,11 +217,11 @@ function updateTopicUI() {
 
 function render() {
   const activeProposals = proposals.filter(p => p.topic === currentTopic);
-const proposalResults = {};
-activeProposals.forEach(p => {
-  proposalResults[p.id] = calculateProposalResult(p);
-});
 
+  const proposalResults = {};
+  activeProposals.forEach(p => {
+    proposalResults[p.id] = calculateProposalResult(p);
+  });
 
   let html = `
   <div class="overflow-x-auto">
@@ -157,14 +232,17 @@ activeProposals.forEach(p => {
           ${activeProposals.map(p => `
             <th class="p-4 text-center">
               <div class="font-semibold">${p.title}</div>
-              <div class="text-xs text-gray-500">Iniciativa</div>
+              <div class="text-xs text-gray-500">
+               Iniciativa
+                ${p.status === "closed" ? `<span class="font-bold text-red-600">(CERRADA)</span>` : ``}
+              </div>
               <div class="mt-2 text-xs bg-gray-50 rounded p-2">
-    <div class="flex justify-between">
-      <span class="text-green-600">✔ ${proposalResults[p.id].yes}</span>
-      <span class="text-red-600">✖ ${proposalResults[p.id].no}</span>
-      <span class="text-gray-500">○ ${proposalResults[p.id].abstain}</span>
-    </div>
-  </div>
+              <div class="flex justify-between">
+                <span class="text-green-600">✔ ${proposalResults[p.id].yes}</span>
+                <span class="text-red-600">✖ ${proposalResults[p.id].no}</span>
+                <span class="text-gray-500">○ ${proposalResults[p.id].abstain}</span>
+              </div>
+            </div>
             </th>
           `).join("")}
         </tr>
@@ -188,29 +266,28 @@ activeProposals.forEach(p => {
               <div class="font-semibold capitalize">${c.name}</div>
               <div class="text-xs text-gray-600 font-medium">${c.role}</div>
 
-       <select
-  class="mt-2 text-xs border rounded px-2 py-1 w-full"
-  onchange="setDelegation('${id}', this.value)"
->
-
+            <select class="mt-2 text-xs border rounded px-2 py-1 w-full" onchange="setDelegation('${id}', this.value)">
                 <option value="">Sin delegar</option>
                 ${Object.keys(characters)
-        .filter(o => o !== id)
-        .map(o => `<option value="${o}" ${c.delegation[currentTopic] === o ? "selected" : ""}>Delegar en ${characters[o].name}</option>`)
-        .join("")}
+                  .filter((o) => o !== id)
+                  .map(
+                    (o) =>
+                      `<option value="${o}" ${c.delegation[currentTopic] === o ? "selected" : ""}>Delegar en ${characters[o].name}</option>`,
+                  )
+                  .join("")}
               </select>
             </div>
           </div>
         </td>
     `;
 
-for (const p of activeProposals) {
-  const isClosed = p.status === "closed";
-  const finalVoterId = resolveFinalVoter(id, p);
-  const finalVoter = characters[finalVoterId];
-  const visual = getVoteVisual(finalVoter.votes[p.id], finalVoterId !== id);
-  const received = getDelegatedVotes(id, p.id);
-  const chain = getDelegationChain(id, p);
+    for (const p of activeProposals) {
+      const isClosed = p.status === "closed";
+      const finalVoterId = resolveFinalVoter(id, p);
+      const finalVoter = characters[finalVoterId];
+      const visual = getVoteVisual(finalVoter.votes[p.id], finalVoterId !== id);
+      const received = getDelegatedVotes(id, p.id);
+      const chain = getDelegationChain(id, p);
 
 
       html += `
@@ -232,9 +309,9 @@ for (const p of activeProposals) {
                 ${isClosed ? "disabled" : ""}
                 onchange="setVote('${id}','${p.id}',this.value)">
                 <option value="">Delegar</option>
-                <option value="yes" ${c.votes[p.id]==="yes"?"selected":""}>Sí</option>
-                <option value="no" ${c.votes[p.id]==="no"?"selected":""}>No</option>
-                <option value="abstain" ${c.votes[p.id]==="abstain"?"selected":""}>Abs</option>
+                <option value="yes" ${c.votes[p.id] === "yes" ? "selected" : ""}>Sí</option>
+                <option value="no" ${c.votes[p.id] === "no" ? "selected" : ""}>No</option>
+                <option value="abstain" ${c.votes[p.id] === "abstain" ? "selected" : ""}>Abs</option>
             </select>
           </div>
         </td>
@@ -259,6 +336,10 @@ for (const p of activeProposals) {
 
 function setVote(id, pid, value) {
   characters[id].votes[pid] = value || null;
+
+  const proposal = proposals.find(p => p.id === pid);
+  updateProposalStatus(proposal);
+
   render();
 }
 
@@ -268,6 +349,11 @@ function setDelegation(id, value) {
   } else {
     delete characters[id].delegation[currentTopic];
   }
+
+  proposals
+    .filter(p => p.topic === currentTopic)
+    .forEach(updateProposalStatus);
+
   render();
 }
 
@@ -276,8 +362,14 @@ function resetState() {
     Object.keys(c.votes).forEach(k => c.votes[k] = null);
     c.delegation = {};
   });
+
+  proposals.forEach(p => {
+    p.status = "open";
+  });
+
   render();
 }
+
 
 updateTopicUI();
 render();
