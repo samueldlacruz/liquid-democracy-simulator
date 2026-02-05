@@ -2,99 +2,158 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Democracia Líquida – Visual</title>
+    <title>Democracia Líquida – Simulador Visual</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
+
     <style>
       body {
         font-family: "Poppins", sans-serif;
       }
     </style>
   </head>
-  <body class="bg-slate-100 p-6 max-w-full md:max-w-7xl mx-auto">
-    <h1 class="text-5xl mt-10 mb-8 text-center font-bold mb-6">
-      <span class="text-blue-500">Simulador</span>
-      <br />
-      de Democracia Líquida
-    </h1>
 
-    <div class="mb-6 mt-24 flex flex-col md:flex-row items-center gap-4">
-      <span class="font-semibold">Tópico:</span>
+  <body class="bg-slate-100 text-slate-800">
+    <!-- CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-10">
 
-      <div
-        class="flex md:flex-row flex-col items-center justify-between gap-4 w-full"
-      >
-        <div
-          class="flex items-center gap-2 bg-white rounded-full shadow px-2 py-1"
-        >
-          <button
-            id="btn-medio"
-            onclick="setTopic('medio_ambiente')"
-            class="px-4 py-1 rounded-full text-sm font-semibold transition"
-          >
-            🌱 Medio Ambiente
-          </button>
+      <!-- HERO -->
+      <section class="text-center mb-20">
+        <span class="inline-block mb-4 px-4 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold">
+          Simulación educativa
+        </span>
 
-          <button
-            id="btn-edu"
-            onclick="setTopic('educacion')"
-            class="px-4 py-1 rounded-full text-sm font-semibold transition"
-          >
-            📚 Educación
-          </button>
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+          Democracia <span class="text-blue-500">Líquida</span><br />
+          en acción
+        </h1>
+
+        <p class="max-w-3xl mx-auto text-lg text-slate-600 mb-8">
+          Explora cómo funciona la democracia líquida: voto directo, delegación flexible,
+          expertos por tópico y resultados colectivos visibles en tiempo real.
+        </p>
+
+        <div class="flex justify-center gap-4">
+          <a href="#simulador"
+             class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition">
+            Probar simulador
+          </a>
+
+          <a href="#que-es"
+             class="px-6 py-3 rounded-xl bg-white text-slate-700 font-semibold shadow hover:bg-slate-50 transition">
+            ¿Qué es esto?
+          </a>
+        </div>
+      </section>
+
+      <!-- QUE ES -->
+      <section id="que-es" class="mb-20">
+        <div class="bg-white rounded-2xl shadow p-8 md:p-10">
+          <h2 class="text-3xl font-bold mb-6">
+            ¿Qué es la democracia líquida?
+          </h2>
+
+          <div class="grid md:grid-cols-2 gap-8 text-slate-700">
+            <div class="space-y-3">
+              <p>
+                La democracia líquida es un modelo de participación que combina
+                lo mejor de dos mundos:
+              </p>
+
+              <ul class="list-disc pl-6 space-y-2">
+                <li>Voto directo en cada iniciativa</li>
+                <li>Delegación flexible del voto</li>
+                <li>Delegación por tópicos específicos</li>
+                <li>Revocabilidad en cualquier momento</li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <p>
+                En lugar de elegir representantes fijos, cada persona decide:
+              </p>
+
+              <ul class="list-disc pl-6 space-y-2">
+                <li>Cuándo votar directamente</li>
+                <li>En qué temas delegar</li>
+                <li>A quién confiar su voto</li>
+              </ul>
+
+              <p class="text-sm text-slate-500 mt-4">
+                El poder fluye dinámicamente según la confianza y el conocimiento.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SIMULADOR -->
+      <section id="simulador" class="mb-20">
+        <div class="mb-6 flex flex-col md:flex-row items-center gap-4">
+          <span class="font-semibold text-slate-700">Tópico:</span>
+
+          <div class="flex flex-col md:flex-row gap-4 w-full md:items-center md:justify-between">
+            <div class="flex items-center gap-2 bg-white rounded-full shadow px-2 py-1">
+              <button
+                id="btn-medio"
+                onclick="setTopic('medio_ambiente')"
+                class="px-4 py-1 rounded-full text-sm font-semibold transition">
+                🌱 Medio Ambiente
+              </button>
+
+              <button
+                id="btn-edu"
+                onclick="setTopic('educacion')"
+                class="px-4 py-1 rounded-full text-sm font-semibold transition">
+                📚 Educación
+              </button>
+            </div>
+
+            <button
+              onclick="resetState()"
+              class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500 text-white shadow hover:bg-red-600 transition">
+              Reiniciar simulación
+            </button>
+          </div>
         </div>
 
-        <button
-          onclick="resetState()"
-          class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500 text-white transition"
-        >
-          Reiniciar
-        </button>
-      </div>
-    </div>
+        <div id="app" class="bg-white rounded-2xl shadow p-4 overflow-x-auto"></div>
+      </section>
 
-    <div id="app" class="bg-white rounded-xl shadow p-4 overflow-x-auto"></div>
+      <!-- DISCLAIMER -->
+      <section class="mb-10">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-sm text-slate-600">
+          <p class="mb-2">
+            <strong>Nota pedagógica:</strong>
+          </p>
 
-    <section class="mt-8 bg-white rounded-xl shadow p-6 w-full">
-      <h2 class="text-2xl font-bold mb-3">¿Qué es la Democracia Líquida?</h2>
+          <p class="mb-2">
+            Este simulador es una herramienta educativa. No representa un sistema
+            electoral real ni un modelo normativo definitivo de democracia líquida.
+          </p>
 
-      <p class="text-gray-700 mb-3">
-        La democracia líquida es un modelo de participación ciudadana que
-        combina el voto directo con la delegación flexible del voto.
-      </p>
+          <p>
+            Las decisiones de diseño buscan facilitar la comprensión del modelo:
+            voto directo, delegación por tópicos, cadenas de delegación y resultados
+            colectivos visibles.
+          </p>
+        </div>
+      </section>
 
-      <ul class="list-disc pl-6 text-gray-700 mb-3 space-y-1">
-        <li>Cada persona puede votar directamente en una propuesta.</li>
-        <li>También puede delegar su voto en alguien de confianza.</li>
-        <li>
-          La delegación puede hacerse por tópico (ej. medio ambiente o
-          educación).
-        </li>
-        <li>El voto directo siempre tiene prioridad sobre la delegación.</li>
-        <li>
-          Las delegaciones pueden cambiarse o retirarse en cualquier momento.
-        </li>
-      </ul>
+      <!-- FOOTER -->
+      <footer class="text-center text-xs text-slate-400">
+        Proyecto open-source · Simulación educativa · Democracia líquida
+      </footer>
 
-      <p class="text-gray-700 mb-6">
-        Este simulador muestra cómo fluye el poder de decisión, quién vota
-        realmente cada propuesta y cómo los expertos influyen sin concentrar el
-        poder.
-      </p>
+    </main>
 
-      <p>
-        <strong>Nota pedagógica:</strong>
-        En este simulador, cuando una persona delega su voto, acepta también la
-        decisión final del delegado, incluida la abstención. Esto refleja uno de
-        los principios de la democracia líquida: delegar es confiar plenamente
-        el juicio político en otra persona.
-      </p>
-    </section>
     <script src="./main.js"></script>
   </body>
 </html>

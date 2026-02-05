@@ -5,20 +5,21 @@ let currentTopic = "medio_ambiente";
 ===================== */
 
 const proposals = [
-  { id: "ma1", title: "Incentivos fiscales a la energía solar residencial", topic: "medio_ambiente" },
-  { id: "ma2", title: "Prohibición gradual de plásticos de un solo uso", topic: "medio_ambiente" },
-  { id: "ma3", title: "Programa nacional de reforestación urbana", topic: "medio_ambiente" },
-  { id: "ed1", title: "Capacitación docente obligatoria cada 3 años", topic: "educacion" },
-  { id: "ed2", title: "Educación digital desde el nivel primario", topic: "educacion" },
-  { id: "ed3", title: "Financiamiento público para investigación universitaria", topic: "educacion" }
+  { id: "ma1", title: "Incentivos fiscales a la energía solar residencial", topic: "medio_ambiente", status: "open" },
+  { id: "ma2", title: "Prohibición gradual de plásticos de un solo uso", topic: "medio_ambiente", status: "open" },
+  { id: "ma3", title: "Programa nacional de reforestación urbana", topic: "medio_ambiente", status: "open" },
+  { id: "ed1", title: "Capacitación docente obligatoria cada 3 años", topic: "educacion", status: "open" },
+  { id: "ed2", title: "Educación digital desde el nivel primario", topic: "educacion", status: "open" },
+  { id: "ed3", title: "Financiamiento público para investigación universitaria", topic: "educacion", status: "open" }
 ];
 
+
 const characters = {
-  ana:     { name: "ana",     color: "bg-pink-500",   role: "Ingeniera ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
-  bruno:   { name: "bruno",   color: "bg-blue-500",   role: "Especialista en educación", expertIn: "educacion", votes: {}, delegation: {} },
-  carla:   { name: "carla",   color: "bg-green-500",  role: "Ciudadana informada", expertIn: null, votes: {}, delegation: {} },
-  maria:   { name: "maria",   color: "bg-orange-500", role: "Activista ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
-  pedro:   { name: "pedro",   color: "bg-yellow-500", role: "Ciudadano apático", expertIn: null, votes: {}, delegation: {} },
+  ana: { name: "ana", color: "bg-pink-500", role: "Ingeniera ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
+  bruno: { name: "bruno", color: "bg-blue-500", role: "Especialista en educación", expertIn: "educacion", votes: {}, delegation: {} },
+  carla: { name: "carla", color: "bg-green-500", role: "Ciudadana informada", expertIn: null, votes: {}, delegation: {} },
+  maria: { name: "maria", color: "bg-orange-500", role: "Activista ambiental", expertIn: "medio_ambiente", votes: {}, delegation: {} },
+  pedro: { name: "pedro", color: "bg-yellow-500", role: "Ciudadano apático", expertIn: null, votes: {}, delegation: {} },
   abigail: { name: "abigail", color: "bg-purple-500", role: "Investigadora académica", expertIn: "educacion", votes: {}, delegation: {} }
 };
 
@@ -141,6 +142,11 @@ function updateTopicUI() {
 
 function render() {
   const activeProposals = proposals.filter(p => p.topic === currentTopic);
+const proposalResults = {};
+activeProposals.forEach(p => {
+  proposalResults[p.id] = calculateProposalResult(p);
+});
+
 
   let html = `
   <div class="overflow-x-auto">
@@ -152,6 +158,13 @@ function render() {
             <th class="p-4 text-center">
               <div class="font-semibold">${p.title}</div>
               <div class="text-xs text-gray-500">Iniciativa</div>
+              <div class="mt-2 text-xs bg-gray-50 rounded p-2">
+    <div class="flex justify-between">
+      <span class="text-green-600">✔ ${proposalResults[p.id].yes}</span>
+      <span class="text-red-600">✖ ${proposalResults[p.id].no}</span>
+      <span class="text-gray-500">○ ${proposalResults[p.id].abstain}</span>
+    </div>
+  </div>
             </th>
           `).join("")}
         </tr>
@@ -175,26 +188,30 @@ function render() {
               <div class="font-semibold capitalize">${c.name}</div>
               <div class="text-xs text-gray-600 font-medium">${c.role}</div>
 
-              <select class="mt-2 text-xs border rounded px-2 py-1 w-full"
-                onchange="setDelegation('${id}', this.value)">
+       <select
+  class="mt-2 text-xs border rounded px-2 py-1 w-full"
+  onchange="setDelegation('${id}', this.value)"
+>
+
                 <option value="">Sin delegar</option>
                 ${Object.keys(characters)
-                  .filter(o => o !== id)
-                  .map(o => `<option value="${o}" ${c.delegation[currentTopic] === o ? "selected" : ""}>Delegar en ${characters[o].name}</option>`)
-                  .join("")}
+        .filter(o => o !== id)
+        .map(o => `<option value="${o}" ${c.delegation[currentTopic] === o ? "selected" : ""}>Delegar en ${characters[o].name}</option>`)
+        .join("")}
               </select>
             </div>
           </div>
         </td>
     `;
 
-    for (const p of activeProposals) {
-      const finalVoterId = resolveFinalVoter(id, p);
-      const finalVoter = characters[finalVoterId];
-      const visual = getVoteVisual(finalVoter.votes[p.id], finalVoterId !== id);
-      const received = getDelegatedVotes(id, p.id);
-      const chain = getDelegationChain(id, p);
-      const result = calculateProposalResult(p);
+for (const p of activeProposals) {
+  const isClosed = p.status === "closed";
+  const finalVoterId = resolveFinalVoter(id, p);
+  const finalVoter = characters[finalVoterId];
+  const visual = getVoteVisual(finalVoter.votes[p.id], finalVoterId !== id);
+  const received = getDelegatedVotes(id, p.id);
+  const chain = getDelegationChain(id, p);
+
 
       html += `
         <td class="p-4 text-center">
@@ -210,22 +227,15 @@ function render() {
 
             ${chain.length ? `<div class="text-[10px] text-gray-500">${chain.join("<br/>")}</div>` : ``}
 
-            <select class="mt-1 text-xs border rounded px-2 py-1"
-              onchange="setVote('${id}','${p.id}',this.value)">
-              <option value="">Delegar</option>
-              <option value="yes" ${c.votes[p.id]==="yes"?"selected":""}>Sí</option>
-              <option value="no" ${c.votes[p.id]==="no"?"selected":""}>No</option>
-              <option value="abstain" ${c.votes[p.id]==="abstain"?"selected":""}>Abs</option>
+            <select
+                class="mt-1 text-xs border rounded px-2 py-1 ${isClosed ? "opacity-50 cursor-not-allowed" : ""}"
+                ${isClosed ? "disabled" : ""}
+                onchange="setVote('${id}','${p.id}',this.value)">
+                <option value="">Delegar</option>
+                <option value="yes" ${c.votes[p.id]==="yes"?"selected":""}>Sí</option>
+                <option value="no" ${c.votes[p.id]==="no"?"selected":""}>No</option>
+                <option value="abstain" ${c.votes[p.id]==="abstain"?"selected":""}>Abs</option>
             </select>
-
-            <div class="mt-2 text-xs bg-gray-50 rounded p-2 w-full">
-              <div class="flex justify-between">
-                <span class="text-green-600">✔ ${result.yes}</span>
-                <span class="text-red-600">✖ ${result.no}</span>
-                <span class="text-gray-500">○ ${result.abstain}</span>
-              </div>
-            </div>
-
           </div>
         </td>
       `;
