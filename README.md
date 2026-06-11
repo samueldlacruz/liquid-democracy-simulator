@@ -1,111 +1,72 @@
-# 🗳️ Simulador de Democracia Líquida
+# Liquid Democracy Simulator
 
-Este proyecto es un **simulador interactivo de democracia líquida**, diseñado con fines **educativos y experimentales**.  
-Permite explorar cómo funcionan los votos directos, la delegación de voto por temas y la influencia de expertos dentro de un sistema democrático híbrido.
+An **interactive educational simulator** for exploring how liquid democracy works — direct voting, flexible delegation, topic-specific experts, and collective results visible in real time.
 
-> ⚠️ Este simulador **no representa** procesos electorales reales ni sistemas oficiales de votación.  
-> Su objetivo es pedagógico y conceptual.
+> This simulator does **not** represent real electoral processes or official voting systems.
+> Its purpose is pedagogical and conceptual.
 
----
+## What is Liquid Democracy?
 
-## 🌊 ¿Qué es la Democracia Líquida?
+Liquid democracy combines elements of direct and representative democracy:
 
-La **democracia líquida** combina elementos de la democracia directa y representativa:
+- Each person can **vote directly** on a proposal
+- Or **delegate their vote** to a trusted person
+- Delegation can be done **per topic** (e.g. environment, education)
+- Votes can be revoked at any time
 
-- Cada persona puede **votar directamente** sobre una propuesta.
-- O bien **delegar su voto** en otra persona de confianza.
-- La delegación puede hacerse **por tema** (ej. medio ambiente, educación).
-- El voto puede recuperarse en cualquier momento.
+This model seeks greater **flexibility, informed participation, and adaptability**.
 
-Este modelo busca mayor **flexibilidad, participación informada y adaptabilidad**.
+## Features
 
----
+- Proposals (initiatives / public policies) organized by topic
+- Characters with different profiles: topic experts, informed citizens, activists, apathetic citizens
+- Per-topic vote delegation
+- Automatic final voter resolution through delegation chains
+- Real-time visualization of direct and delegated votes
+- Internationalization: Spanish and English
+- Dark theme with glassmorphism design
 
-## 🧩 ¿Qué simula este proyecto?
-
-- 📌 Propuestas (iniciativas / políticas públicas) organizadas por tema  
-- 👥 Personas con distintos perfiles:
-  - expertos temáticos
-  - ciudadanos informados
-  - activistas
-  - ciudadanos apáticos
-- 🔁 Delegación de voto por tema
-- 🧠 Resolución automática del voto final
-- 📊 Visualización de votos directos y votos delegados
-- 🧪 Cambios dinámicos en tiempo real
-
----
-
-## 🧑‍🤝‍🧑 Personajes
-
-Cada personaje tiene:
-- un rol
-- un área de expertise (opcional)
-- la posibilidad de votar o delegar
-
-Ejemplos:
-- Ingeniera ambiental (experta en medio ambiente)
-- Especialista en educación
-- Investigadora académica
-- Ciudadanos sin especialización
-
----
-
-## 🛠️ Tecnologías
+## Tech Stack
 
 - HTML
 - JavaScript (vanilla)
-- Tailwind CSS
-- Renderizado dinámico sin frameworks (intencional)
+- Tailwind CSS (CDN)
 
----
+## Getting Started
 
-## 🎯 Objetivo del proyecto
+Open `index.html` in your browser:
 
-- Explorar modelos alternativos de participación democrática
-- Facilitar discusiones sobre:
-  - delegación
-  - representación
-  - concentración de poder
-  - confianza en expertos
-- Servir como **demo conceptual** para:
-  - civic tech
-  - educación
-  - charlas
-  - prototipos institucionales
+```bash
+open index.html
+```
 
----
+No server required — the simulator is 100% client-side.
 
-## 📂 Estado del proyecto
+## Project Structure
 
-- 🧪 **Prototipo / Demo**
-- 🚧 En evolución
-- 💡 Abierto a ideas y mejoras
+```
+liquid-democracy-simulator/
+├── index.html          # Main page (hero + simulator)
+├── core.js             # Voting & delegation logic
+├── main.js             # Simulator UI
+├── i18n.js             # Translation system (ES/EN)
+├── img/                # Avatar images
+├── README.md
+├── LICENSE
+└── .gitignore
+```
 
----
+## Bug Fixes Applied
 
-## 📜 Licencia
+The following logical errors were identified and fixed in the original codebase:
 
-Este proyecto está bajo la **MIT License**.
+1. **Infinite recursion on circular delegations** — `visited.add()` was missing in the delegation chain resolver
+2. **`reset()` deleting the delegation object** — Changed to reinitialize as empty object
+3. **Artificial limitation on delegates** — Removed restriction preventing multiple people from delegating to the same person
+4. **Inconsistent delegation lookup order** — Standardized to check topic first, then proposal-specific
+5. **Silent ignoring of unvoted people** — Added `pending` count to proposal results
+6. **Initial topic not synced** — Core's `currentTopic` was empty on startup, causing no initiatives to display
 
-Puedes:
-- usarlo
-- modificarlo
-- adaptarlo
-- compartirlo
+## License
 
-Siempre que mantengas el aviso de copyright.
-
----
-
-## 🤝 Contribuciones
-
-Las ideas, sugerencias y mejoras son bienvenidas.  
-Este proyecto busca **provocar conversación**, no imponer un modelo.
-
----
-
-## ✨ Nota final
-
-La democracia no es estática.  
-Este simulador es una invitación a **pensarla, cuestionarla y reimaginarla**.
+MIT License. See [LICENSE](LICENSE) for details.

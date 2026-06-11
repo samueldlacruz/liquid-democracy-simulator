@@ -1,101 +1,218 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <title>Democracia Líquida – Simulador Visual</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liquid Democracy Simulator</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              surface: { DEFAULT: '#1e293b', light: '#334155', dark: '#0f172a' },
+              accent: { blue: '#3b82f6', 'blue-hover': '#2563eb', green: '#22c55e', red: '#ef4444', amber: '#f59e0b' }
+            },
+            boxShadow: {
+              'glow-blue': '0 0 20px rgba(59,130,246,0.3)',
+              'glow-green': '0 0 20px rgba(34,197,94,0.3)',
+              'glow-red': '0 0 20px rgba(239,68,68,0.3)',
+              'card': '0 4px 24px rgba(0,0,0,0.3)'
+            },
+            fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+            animation: {
+              'pulse-slow': 'pulse 3s ease-in-out infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'glow': 'glow 2s ease-in-out infinite alternate'
+            },
+            keyframes: {
+              float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-10px)' } },
+              glow: { '0%': { boxShadow: '0 0 5px rgba(59,130,246,0.2)' }, '100%': { boxShadow: '0 0 20px rgba(59,130,246,0.6)' } }
+            }
+          }
+        }
+      }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     <style>
-      body {
-        font-family: "Poppins", sans-serif;
+      * { font-family: "Poppins", sans-serif; }
+      body { background: #0f172a; color: #f8fafc; }
+
+      .glass { background: rgba(30,41,59,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+      .glass-light { background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.06); }
+
+      .gradient-text { background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+      .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); transition: all 0.2s ease; }
+      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 24px rgba(59,130,246,0.4); }
+      .btn-ghost { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; }
+      .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+      .hero-line { stroke-dasharray: 6 4; animation: dash 20s linear infinite; }
+      @keyframes dash { to { stroke-dashoffset: -200; } }
+
+      .avatar-ring { transition: all 0.2s ease; cursor: pointer; }
+      .avatar-ring:hover { transform: scale(1.1); box-shadow: 0 0 16px rgba(59,130,246,0.5); }
+      .avatar-ring.selected { box-shadow: 0 0 20px rgba(59,130,246,0.7); border-color: #3b82f6; }
+
+      table { border-collapse: separate; border-spacing: 0; }
+      th, td { border-bottom: 1px solid rgba(255,255,255,0.06); }
+
+      select, input {
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+        color: #f8fafc; border-radius: 0.5rem; padding: 0.375rem 0.75rem;
+        font-size: 0.75rem; outline: none; transition: border-color 0.2s;
       }
+      select:focus, input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+      select option { background: #1e293b; color: #f8fafc; }
+
+      .topic-btn { transition: all 0.2s ease; }
+      .topic-btn.active { background: #3b82f6; color: white; box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+      .topic-btn:not(.active):hover { background: rgba(255,255,255,0.1); }
     </style>
   </head>
 
-  <body class="bg-slate-100 text-slate-800">
-    <!-- CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 py-10">
+  <body class="min-h-screen">
+    <nav class="fixed top-0 left-0 right-0 z-50 glass">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-end">
+        <button id="lang-toggle" onclick="toggleLang()" class="btn-ghost px-3 py-2 rounded-xl text-sm font-semibold">EN</button>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 pt-24 pb-10">
       <!-- HERO -->
-      <section class="text-center mb-20">
-        <span
-          class="inline-block mb-4 px-4 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold"
-        >
-          Simulación educativa
-        </span>
+      <section class="mb-24 grid md:grid-cols-2 gap-12 items-center min-h-[70vh]">
+        <div class="space-y-6">
+          <span class="inline-block px-4 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-semibold border border-blue-500/20" data-i18n="hero_badge">🎓 Educational Simulation</span>
+          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+            <span data-i18n="hero_title_line1">Liquid</span><br/>
+            <span class="gradient-text" data-i18n="hero_title_line2">Democracy</span><br/>
+            <span data-i18n="hero_title_line3">in Action</span>
+          </h1>
+          <p class="text-lg text-slate-400 max-w-lg" data-i18n="hero_description">Explore how liquid democracy works: direct voting, flexible delegation, topic-specific experts, and collective results visible in real time.</p>
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#simulador" class="btn-primary px-6 py-3 rounded-xl font-semibold shadow-lg text-white" data-i18n="hero_cta_simulator">Try Simulator</a>
+            <a href="#que-es" class="btn-ghost px-6 py-3 rounded-xl font-semibold text-slate-300" data-i18n="hero_cta_learn">What is this?</a>
+          </div>
+          <div class="flex gap-8 pt-6">
+            <div><div class="text-2xl font-bold text-blue-400">7</div><div class="text-xs text-slate-500" data-i18n="hero_stat_participants">Participants</div></div>
+            <div><div class="text-2xl font-bold text-green-400">9</div><div class="text-xs text-slate-500" data-i18n="hero_stat_initiatives">Initiatives</div></div>
+            <div><div class="text-2xl font-bold text-purple-400">3</div><div class="text-xs text-slate-500" data-i18n="hero_stat_topics">Topics</div></div>
+          </div>
+        </div>
 
-        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-          Democracia <span class="text-blue-500">Líquida</span><br />
-          en acción
-        </h1>
-
-        <p class="max-w-3xl mx-auto text-lg text-slate-600 mb-8">
-          Explora cómo funciona la democracia líquida: voto directo, delegación
-          flexible, expertos por tópico y resultados colectivos visibles en
-          tiempo real.
-        </p>
-
-        <div class="flex justify-center gap-4">
-          <a
-            href="#simulador"
-            class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
-          >
-            Probar simulador
-          </a>
-
-          <a
-            href="#que-es"
-            class="px-6 py-3 rounded-xl bg-white text-slate-700 font-semibold shadow hover:bg-slate-50 transition"
-          >
-            ¿Qué es esto?
-          </a>
+        <div class="relative flex items-center justify-center">
+          <svg viewBox="0 0 400 400" class="w-full max-w-md animate-float" xmlns="http://www.w3.org/2000/svg">
+            <line x1="200" y1="80" x2="100" y2="200" class="hero-line" stroke="#3b82f6" stroke-width="2" opacity="0.4"/>
+            <line x1="200" y1="80" x2="300" y2="200" class="hero-line" stroke="#3b82f6" stroke-width="2" opacity="0.4"/>
+            <line x1="100" y1="200" x2="60" y2="320" class="hero-line" stroke="#22c55e" stroke-width="2" opacity="0.4"/>
+            <line x1="100" y1="200" x2="160" y2="320" class="hero-line" stroke="#22c55e" stroke-width="2" opacity="0.4"/>
+            <line x1="300" y1="200" x2="240" y2="320" class="hero-line" stroke="#f59e0b" stroke-width="2" opacity="0.4"/>
+            <line x1="300" y1="200" x2="340" y2="320" class="hero-line" stroke="#f59e0b" stroke-width="2" opacity="0.4"/>
+            <g class="hero-node" style="animation-delay:-0s">
+              <circle cx="200" cy="80" r="28" fill="#3b82f6" opacity="0.9"/>
+              <text x="200" y="85" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Expert</text>
+            </g>
+            <g class="hero-node" style="animation-delay:-1.5s">
+              <circle cx="100" cy="200" r="22" fill="#22c55e" opacity="0.9"/>
+              <text x="100" y="205" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Vote</text>
+            </g>
+            <g class="hero-node" style="animation-delay:-3s">
+              <circle cx="300" cy="200" r="22" fill="#f59e0b" opacity="0.9"/>
+              <text x="300" y="205" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Delegate</text>
+            </g>
+            <g class="hero-node" style="animation-delay:-2s">
+              <circle cx="60" cy="320" r="16" fill="#8b5cf6" opacity="0.8"/>
+              <text x="60" y="324" text-anchor="middle" fill="white" font-size="8">A</text>
+            </g>
+            <g class="hero-node" style="animation-delay:-4s">
+              <circle cx="160" cy="320" r="16" fill="#ec4899" opacity="0.8"/>
+              <text x="160" y="324" text-anchor="middle" fill="white" font-size="8">B</text>
+            </g>
+            <g class="hero-node" style="animation-delay:-2.5s">
+              <circle cx="240" cy="320" r="16" fill="#06b6d4" opacity="0.8"/>
+              <text x="240" y="324" text-anchor="middle" fill="white" font-size="8">C</text>
+            </g>
+            <g class="hero-node" style="animation-delay:-3.5s">
+              <circle cx="340" cy="320" r="16" fill="#14b8a6" opacity="0.8"/>
+              <text x="340" y="324" text-anchor="middle" fill="white" font-size="8">D</text>
+            </g>
+          </svg>
         </div>
       </section>
 
       <!-- QUE ES -->
       <section id="que-es" class="mb-20">
-        <div class="bg-white rounded-2xl shadow p-8 md:p-10">
-          <h2 class="text-3xl font-bold mb-6">
-            ¿Qué es la democracia líquida?
-          </h2>
-
-          <div class="grid md:grid-cols-2 gap-8 text-slate-700">
+        <div class="glass rounded-2xl p-8 md:p-10 shadow-card">
+          <h2 class="text-3xl font-bold mb-6" data-i18n="what_title">What is Liquid Democracy?</h2>
+          <div class="grid md:grid-cols-2 gap-8 text-slate-300">
             <div class="space-y-3">
-              <p>
-                La democracia líquida es un modelo de participación que combina
-                lo mejor de dos mundos:
-              </p>
-
+              <p data-i18n="what_desc1">Liquid democracy is a participation model that combines the best of two worlds:</p>
               <ul class="list-disc pl-6 space-y-2">
-                <li>Voto directo en cada iniciativa</li>
-                <li>Delegación flexible del voto</li>
-                <li>Delegación por tópicos específicos</li>
-                <li>Revocabilidad en cualquier momento</li>
+                <li data-i18n="what_li1">Direct voting on each initiative</li>
+                <li data-i18n="what_li2">Flexible vote delegation</li>
+                <li data-i18n="what_li3">Delegation by specific topics</li>
+                <li data-i18n="what_li4">Revocability at any time</li>
               </ul>
             </div>
-
             <div class="space-y-3">
-              <p>
-                En lugar de elegir representantes fijos, cada persona decide:
-              </p>
-
+              <p data-i18n="what_desc2">Instead of choosing fixed representatives, each person decides:</p>
               <ul class="list-disc pl-6 space-y-2">
-                <li>Cuándo votar directamente</li>
-                <li>En qué temas delegar</li>
-                <li>A quién confiar su voto</li>
+                <li data-i18n="what_li5">When to vote directly</li>
+                <li data-i18n="what_li6">Which topics to delegate</li>
+                <li data-i18n="what_li7">Who to trust with their vote</li>
               </ul>
+              <p class="text-sm text-slate-500 mt-4" data-i18n="what_footer">Power flows dynamically based on trust and knowledge.</p>
+            </div>
+          </div>
 
-              <p class="text-sm text-slate-500 mt-4">
-                El poder fluye dinámicamente según la confianza y el
-                conocimiento.
-              </p>
+          <!-- Practical Example -->
+          <div class="mt-8 pt-6 border-t border-white/10">
+            <h3 class="text-lg font-bold mb-4 text-slate-200" data-i18n="what_example_title">Practical Example</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <!-- Example 1: Direct Vote -->
+              <div class="glass-light rounded-xl p-4">
+                <div class="text-xs text-blue-400 font-semibold mb-3" data-i18n="what_example_direct">Direct Vote</div>
+                <div class="flex items-center gap-3">
+                  <img src="/img/ana.png" class="w-10 h-10 rounded-full border-2 bg-pink-500" />
+                  <div>
+                    <div class="text-sm font-semibold text-slate-200">Ana</div>
+                    <div class="text-xs text-slate-500" data-i18n="what_example_ana_role">Environmental Engineer</div>
+                  </div>
+                  <div class="text-green-400 text-lg mx-2">✔</div>
+                  <div class="text-xs text-slate-400" data-i18n="what_example_vote_env">Votes YES on<br/>Solar Incentives</div>
+                </div>
+              </div>
+
+              <!-- Example 2: Delegation -->
+              <div class="glass-light rounded-xl p-4">
+                <div class="text-xs text-purple-400 font-semibold mb-3" data-i18n="what_example_delegation">Delegation Chain</div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <div class="flex items-center gap-2">
+                    <img src="/img/pedro.png" class="w-10 h-10 rounded-full border-2 bg-yellow-500" />
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">Pedro</div>
+                      <div class="text-xs text-slate-500" data-i18n="what_example_pedro_role">Apathetic Citizen</div>
+                    </div>
+                  </div>
+                  <div class="text-purple-400 text-lg">→</div>
+                  <div class="flex items-center gap-2">
+                    <img src="/img/bruno.png" class="w-10 h-10 rounded-full border-2 bg-blue-500" />
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">Bruno</div>
+                      <div class="text-xs text-slate-500" data-i18n="what_example_bruno_role">Education Specialist</div>
+                    </div>
+                  </div>
+                  <div class="text-green-400 text-lg">✔</div>
+                </div>
+                <div class="text-xs text-slate-500 mt-2" data-i18n="what_example_delegation_desc">Pedro trusts Bruno on Education → Bruno votes YES on Digital Education</div>
+              </div>
             </div>
           </div>
         </div>
@@ -104,82 +221,33 @@
       <!-- SIMULADOR -->
       <section id="simulador" class="mb-20">
         <div class="mb-6 flex flex-col md:flex-row items-center gap-4">
-          <span class="font-semibold text-slate-700">Tópico:</span>
-
-          <div
-            class="flex flex-col md:flex-row gap-4 w-full md:items-center md:justify-between"
-          >
-            <div
-              class="flex items-center gap-2 bg-white rounded-full shadow px-2 py-1"
-            >
-              <button
-                id="btn-medio"
-                onclick="setTopic('medio_ambiente')"
-                class="px-4 py-1 rounded-full text-sm font-semibold transition"
-              >
-                🌱 Medio Ambiente
-              </button>
-
-              <button
-                id="btn-edu"
-                onclick="setTopic('educacion')"
-                class="px-4 py-1 rounded-full text-sm font-semibold transition"
-              >
-                📚 Educación
-              </button>
-              <button
-                id="btn-salud"
-                onclick="setTopic('salud')"
-                class="px-4 py-1 rounded-full text-sm font-semibold text-gray-600"
-              >
-                🏥 Salud
-              </button>
+          <span class="font-semibold text-slate-300" data-i18n="sim_topic">Topic:</span>
+          <div class="flex flex-col md:flex-row gap-4 w-full md:items-center md:justify-between">
+            <div class="flex items-center gap-2 bg-surface rounded-full shadow px-2 py-1">
+              <button id="btn-medio" onclick="setTopic('medio_ambiente')" class="topic-btn px-4 py-1 rounded-full text-sm font-semibold">🌱 <span data-i18n="topic_environment">Environment</span></button>
+              <button id="btn-edu" onclick="setTopic('educacion')" class="topic-btn px-4 py-1 rounded-full text-sm font-semibold">📚 <span data-i18n="topic_education">Education</span></button>
+              <button id="btn-salud" onclick="setTopic('salud')" class="topic-btn px-4 py-1 rounded-full text-sm font-semibold">🏥 <span data-i18n="topic_health">Health</span></button>
             </div>
-
-            <button
-              onclick="resetState()"
-              class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500 text-white shadow hover:bg-red-600 transition"
-            >
-              Reiniciar simulación
-            </button>
+            <button onclick="resetState()" class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition" data-i18n="sim_reset">Reset Simulation</button>
           </div>
         </div>
-
-        <div
-          id="app"
-          class="bg-white rounded-2xl shadow p-4 overflow-x-auto"
-        ></div>
+        <div id="app" class="glass rounded-2xl p-4 overflow-x-auto shadow-card"></div>
       </section>
 
       <!-- DISCLAIMER -->
       <section class="mb-10">
-        <div
-          class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-sm text-slate-600"
-        >
-          <p class="mb-2">
-            <strong>Nota pedagógica:</strong>
-          </p>
-
-          <p class="mb-2">
-            Este simulador es una herramienta educativa. No representa un
-            sistema electoral real ni un modelo normativo definitivo de
-            democracia líquida.
-          </p>
-
-          <p>
-            Las decisiones de diseño buscan facilitar la comprensión del modelo:
-            voto directo, delegación por tópicos, cadenas de delegación y
-            resultados colectivos visibles.
-          </p>
+        <div class="glass-light rounded-xl p-6 text-sm text-slate-400">
+          <p class="mb-2 font-semibold text-slate-300" data-i18n="disclaimer_title">📋 Pedagogical Note:</p>
+          <p class="mb-2" data-i18n="disclaimer_p1">This simulator is an educational tool. It does not represent a real electoral system or a definitive normative model of liquid democracy.</p>
+          <p data-i18n="disclaimer_p2">Design decisions aim to facilitate understanding of the model: direct voting, topic delegation, delegation chains, and visible collective results.</p>
         </div>
       </section>
 
-      <!-- FOOTER -->
-      <footer class="text-center text-xs text-slate-400">
-        Proyecto open-source · Simulación educativa · Democracia líquida
-      </footer>
+      <footer class="text-center text-xs text-slate-600" data-i18n="footer">Open-source project · Educational simulation · Liquid democracy</footer>
     </main>
 
+    <script src="./i18n.js"></script>
+    <script src="./core.js"></script>
     <script src="./main.js"></script>
   </body>
 </html>
