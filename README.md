@@ -23,14 +23,11 @@ This model seeks greater **flexibility, informed participation, and adaptability
 - Per-topic vote delegation
 - Automatic final voter resolution through delegation chains
 - Real-time visualization of direct and delegated votes
-- Internationalization: Spanish and English
+- **Create your own simulator** with custom topics, initiatives, and characters
+- Custom simulators **save to localStorage** and persist across sessions
+- Open custom simulator in a **new tab** while keeping the default available
+- Bilingual interface: **Spanish and English** with one-click toggle
 - Dark theme with glassmorphism design
-
-## Tech Stack
-
-- HTML
-- JavaScript (vanilla)
-- Tailwind CSS (CDN)
 
 ## Getting Started
 
@@ -42,19 +39,36 @@ open index.html
 
 No server required — the simulator is 100% client-side.
 
+## Create Your Own Simulator
+
+1. Click **"⚙ Create Simulator"** in the hero section
+2. Add custom topics with emojis and names
+3. Add initiatives per topic
+4. Create characters with name, role, color, and expertise
+5. Choose avatar style: initials with color or reuse existing images
+6. Click **"▶ Save & Run"** to save and open in a new tab
+
+Your custom simulator persists in localStorage. Use **"← Back to Default"** in the navigation bar to return to the original simulator.
+
 ## Project Structure
 
 ```
 liquid-democracy-simulator/
-├── index.html          # Main page (hero + simulator)
+├── index.html          # Main page (hero + simulator + builder modal)
 ├── core.js             # Voting & delegation logic
-├── main.js             # Simulator UI
+├── main.js             # Simulator UI, builder CRUD, localStorage
 ├── i18n.js             # Translation system (ES/EN)
 ├── img/                # Avatar images
 ├── README.md
 ├── LICENSE
 └── .gitignore
 ```
+
+## Tech Stack
+
+- HTML
+- JavaScript (vanilla)
+- Tailwind CSS (CDN)
 
 ## Bug Fixes Applied
 
