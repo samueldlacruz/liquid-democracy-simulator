@@ -12,6 +12,7 @@ const translations = {
     hero_description: "Explora cómo funciona la democracia líquida: voto directo, delegación flexible, expertos por tópico y resultados colectivos visibles en tiempo real.",
     hero_cta_simulator: "Probar simulador",
     hero_cta_learn: "¿Qué es esto?",
+    hero_cta_create: "⚙ Crear Simulador",
     hero_stat_participants: "Participantes",
     hero_stat_initiatives: "Iniciativas",
     hero_stat_topics: "Tópicos",
@@ -83,6 +84,29 @@ const translations = {
 
     // Footer
     footer: "Proyecto open-source · Simulación educativa · Democracia líquida",
+
+    // Nav
+    nav_back_default: "← Volver al Default",
+
+    // Builder
+    sim_create: "⚙ Crear Simulador",
+    sim_no_proposals: "No hay iniciativas para este tópico",
+    builder_title: "⚙ Crea tu Simulador",
+    builder_save: "💾 Guardar Simulador",
+    builder_save_run: "▶ Guardar y Ejecutar",
+    builder_reset_default: "↺ Restaurar Predeterminado",
+    builder_topics: "📋 Tópicos",
+    builder_proposals: "📌 Iniciativas",
+    builder_characters: "👥 Personajes",
+    builder_add: "+ Agregar",
+    builder_topic_name_ph: "Nombre del tópico",
+    builder_proposal_title_ph: "Título de la iniciativa",
+    builder_char_name_ph: "Nombre",
+    builder_char_role_ph: "Rol",
+    builder_confirm_delete_topic: "¿Eliminar tópico",
+    builder_confirm_delete_proposal: "¿Eliminar iniciativa",
+    builder_confirm_delete_character: "¿Eliminar personaje",
+    builder_saved: "Simulador guardado correctamente",
   },
 
   en: {
@@ -94,6 +118,7 @@ const translations = {
     hero_description: "Explore how liquid democracy works: direct voting, flexible delegation, topic-specific experts, and collective results visible in real time.",
     hero_cta_simulator: "Try Simulator",
     hero_cta_learn: "What is this?",
+    hero_cta_create: "Create Simulator",
     hero_stat_participants: "Participants",
     hero_stat_initiatives: "Initiatives",
     hero_stat_topics: "Topics",
@@ -165,6 +190,29 @@ const translations = {
 
     // Footer
     footer: "Open-source project · Educational simulation · Liquid democracy",
+
+    // Nav
+    nav_back_default: "← Back to Default",
+
+    // Builder
+    sim_create: "Create Simulator",
+    sim_no_proposals: "No initiatives for this topic",
+    builder_title: "⚙ Create Your Simulator",
+    builder_save: "💾 Save Simulator",
+    builder_save_run: "▶ Save & Run",
+    builder_reset_default: "↺ Reset Default",
+    builder_topics: "📋 Topics",
+    builder_proposals: "📌 Initiatives",
+    builder_characters: "👥 Characters",
+    builder_add: "+ Add",
+    builder_topic_name_ph: "Topic name",
+    builder_proposal_title_ph: "Initiative title",
+    builder_char_name_ph: "Name",
+    builder_char_role_ph: "Role",
+    builder_confirm_delete_topic: "Delete topic",
+    builder_confirm_delete_proposal: "Delete initiative",
+    builder_confirm_delete_character: "Delete character",
+    builder_saved: "Simulator saved successfully",
   }
 };
 

@@ -75,19 +75,67 @@
       .topic-btn { transition: all 0.2s ease; }
       .topic-btn.active { background: #3b82f6; color: white; box-shadow: 0 0 12px rgba(59,130,246,0.3); }
       .topic-btn:not(.active):hover { background: rgba(255,255,255,0.1); }
+
+      .modal-overlay {
+        position: fixed; inset: 0; z-index: 100;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      }
+      .modal-overlay.open { opacity: 1; pointer-events: auto; }
+      .modal-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      }
+      .modal-content {
+        position: relative; z-index: 1;
+        width: 100%; max-width: 42rem; max-height: 85vh;
+        overflow-y: auto; overscroll-behavior: contain;
+        border-radius: 1rem; padding: 1.5rem;
+        background: rgba(30,41,59,0.95); backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        transform: translateY(20px) scale(0.97); transition: transform 0.25s ease;
+      }
+      .modal-overlay.open .modal-content { transform: translateY(0) scale(1); }
+      .modal-content::-webkit-scrollbar { width: 6px; }
+      .modal-content::-webkit-scrollbar-track { background: transparent; }
+      .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+      .builder-section { border-top: 1px solid rgba(255,255,255,0.06); }
+      .builder-input {
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+        color: #f8fafc; border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+        font-size: 0.875rem; outline: none; transition: border-color 0.2s; width: 100%;
+      }
+      .builder-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+      .builder-input::placeholder { color: rgba(255,255,255,0.3); }
+      .builder-btn {
+        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+        color: #f8fafc; border-radius: 0.5rem; padding: 0.5rem 1rem;
+        font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      }
+      .builder-btn:hover { background: rgba(255,255,255,0.1); }
+      .builder-btn-add { background: rgba(59,130,246,0.2); border-color: rgba(59,130,246,0.3); color: #60a5fa; }
+      .builder-btn-add:hover { background: rgba(59,130,246,0.3); }
+      .builder-btn-save { background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; color: white; }
+      .builder-btn-save:hover { box-shadow: 0 0 16px rgba(59,130,246,0.4); transform: translateY(-1px); }
+      @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .animate-fade-in { animation: fade-in 0.3s ease; }
     </style>
   </head>
 
   <body class="min-h-screen">
     <nav class="fixed top-0 left-0 right-0 z-50 glass">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-end">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <a id="btn-back-default" href="index.html" class="hidden btn-ghost px-4 py-2 rounded-xl text-sm font-semibold text-slate-300" data-i18n="nav_back_default">← Back to Default</a>
+        <div></div>
         <button id="lang-toggle" onclick="toggleLang()" class="btn-ghost px-3 py-2 rounded-xl text-sm font-semibold">EN</button>
       </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 pt-24 pb-10">
       <!-- HERO -->
-      <section class="mb-24 grid md:grid-cols-2 gap-12 items-center min-h-[70vh]">
+      <section id="hero-section" class="mb-24 grid md:grid-cols-2 gap-12 items-center min-h-[70vh]">
         <div class="space-y-6">
           <span class="inline-block px-4 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-semibold border border-blue-500/20" data-i18n="hero_badge">🎓 Educational Simulation</span>
           <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
@@ -98,7 +146,8 @@
           <p class="text-lg text-slate-400 max-w-lg" data-i18n="hero_description">Explore how liquid democracy works: direct voting, flexible delegation, topic-specific experts, and collective results visible in real time.</p>
           <div class="flex flex-wrap gap-4 pt-2">
             <a href="#simulador" class="btn-primary px-6 py-3 rounded-xl font-semibold shadow-lg text-white" data-i18n="hero_cta_simulator">Try Simulator</a>
-            <a href="#que-es" class="btn-ghost px-6 py-3 rounded-xl font-semibold text-slate-300" data-i18n="hero_cta_learn">What is this?</a>
+            <a href="#what-section" class="btn-ghost px-6 py-3 rounded-xl font-semibold text-slate-300" data-i18n="hero_cta_learn">What is this?</a>
+            <button onclick="toggleBuilder()" class="btn-ghost px-6 py-3 rounded-xl font-semibold text-slate-300" data-i18n="hero_cta_create">⚙ Create Simulator</button>
           </div>
           <div class="flex gap-8 pt-6">
             <div><div class="text-2xl font-bold text-blue-400">7</div><div class="text-xs text-slate-500" data-i18n="hero_stat_participants">Participants</div></div>
@@ -148,7 +197,7 @@
       </section>
 
       <!-- QUE ES -->
-      <section id="que-es" class="mb-20">
+      <section id="what-section" class="mb-20">
         <div class="glass rounded-2xl p-8 md:p-10 shadow-card">
           <h2 class="text-3xl font-bold mb-6" data-i18n="what_title">What is Liquid Democracy?</h2>
           <div class="grid md:grid-cols-2 gap-8 text-slate-300">
@@ -223,15 +272,99 @@
         <div class="mb-6 flex flex-col md:flex-row items-center gap-4">
           <span class="font-semibold text-slate-300" data-i18n="sim_topic">Topic:</span>
           <div class="flex flex-col md:flex-row gap-4 w-full md:items-center md:justify-between">
-            <div class="flex items-center gap-2 bg-surface rounded-full shadow px-2 py-1">
-              <button id="btn-medio" onclick="setTopic('medio_ambiente')" class="topic-btn px-4 py-1 rounded-full text-sm font-semibold">🌱 <span data-i18n="topic_environment">Environment</span></button>
-              <button id="btn-edu" onclick="setTopic('educacion')" class="topic-btn px-4 py-1 rounded-full text-sm font-semibold">📚 <span data-i18n="topic_education">Education</span></button>
-              <button id="btn-salud" onclick="setTopic('salud')" class="topic-btn px-4 py-1 rounded-full text-sm font-semibold">🏥 <span data-i18n="topic_health">Health</span></button>
-            </div>
-            <button onclick="resetState()" class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition" data-i18n="sim_reset">Reset Simulation</button>
+            <div id="topic-buttons" class="flex items-center gap-2 bg-surface rounded-full shadow px-2 py-1"></div>
+            <button onclick="resetState()" class="px-4 py-1 rounded-full text-sm font-semibold bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition" data-i18n="sim_reset">Reset</button>
           </div>
         </div>
         <div id="app" class="glass rounded-2xl p-4 overflow-x-auto shadow-card"></div>
+      </section>
+
+      <!-- Builder Modal -->
+      <div id="builder-modal" class="modal-overlay">
+        <div class="modal-backdrop" onclick="toggleBuilder(false)"></div>
+        <div class="modal-content">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-slate-200" data-i18n="builder_title">⚙ Create Your Simulator</h3>
+            <button onclick="toggleBuilder(false)" class="text-slate-400 hover:text-white text-xl px-2 transition">✕</button>
+          </div>
+
+          <!-- Topics Section -->
+          <div class="builder-section pt-6 mb-6">
+            <h4 class="font-semibold text-slate-300 mb-3" data-i18n="builder_topics">📋 Topics</h4>
+            <div id="builder-topics-list" class="space-y-2 mb-3"></div>
+            <div class="flex gap-2">
+              <input type="text" id="new-topic-emoji" class="builder-input w-16 text-center" placeholder="🌱" maxlength="2" />
+              <input type="text" id="new-topic-label" class="builder-input flex-1" data-i18n-placeholder="builder_topic_name_ph" placeholder="Topic name" />
+              <button onclick="addTopic()" class="builder-btn builder-btn-add" data-i18n="builder_add">+ Add</button>
+            </div>
+          </div>
+
+          <!-- Proposals Section -->
+          <div class="builder-section pt-6 mb-6">
+            <h4 class="font-semibold text-slate-300 mb-3" data-i18n="builder_proposals">📌 Initiatives</h4>
+            <div class="flex gap-2 mb-3">
+              <select id="proposal-filter-topic" class="builder-input w-48" onchange="renderBuilderProposals()">
+                <option value="">All topics</option>
+              </select>
+            </div>
+            <div id="builder-proposals-list" class="space-y-2 mb-3"></div>
+            <div class="flex gap-2">
+              <select id="proposal-topic-select" class="builder-input w-48"></select>
+              <input type="text" id="new-proposal-title" class="builder-input flex-1" data-i18n-placeholder="builder_proposal_title_ph" placeholder="Initiative title" />
+              <button onclick="addProposal()" class="builder-btn builder-btn-add" data-i18n="builder_add">+ Add</button>
+            </div>
+          </div>
+
+          <!-- Characters Section -->
+          <div class="builder-section pt-6 mb-6">
+            <h4 class="font-semibold text-slate-300 mb-3" data-i18n="builder_characters">👥 Characters</h4>
+            <div id="builder-characters-list" class="space-y-2 mb-3"></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+              <input type="text" id="new-char-name" class="builder-input" data-i18n-placeholder="builder_char_name_ph" placeholder="Name" />
+              <input type="text" id="new-char-role" class="builder-input" data-i18n-placeholder="builder_char_role_ph" placeholder="Role" />
+              <select id="new-char-color" class="builder-input">
+                <option value="bg-pink-500">Pink</option>
+                <option value="bg-blue-500">Blue</option>
+                <option value="bg-green-500">Green</option>
+                <option value="bg-orange-500">Orange</option>
+                <option value="bg-yellow-500">Yellow</option>
+                <option value="bg-purple-500">Purple</option>
+                <option value="bg-red-500">Red</option>
+                <option value="bg-cyan-500">Cyan</option>
+                <option value="bg-teal-500">Teal</option>
+                <option value="bg-indigo-500">Indigo</option>
+              </select>
+              <select id="new-char-expert" class="builder-input">
+                <option value="">No expertise</option>
+              </select>
+            </div>
+            <div class="flex gap-2 mb-3">
+              <select id="new-char-avatar-type" class="builder-input w-40" onchange="toggleAvatarIdField()">
+                <option value="initials">Initials</option>
+                <option value="image">Image</option>
+              </select>
+              <div id="avatar-id-field" class="hidden flex-1">
+                <select id="new-char-avatar-id" class="builder-input">
+                  <option value="ana">Ana</option>
+                  <option value="bruno">Bruno</option>
+                  <option value="carla">Carla</option>
+                  <option value="maria">Maria</option>
+                  <option value="pedro">Pedro</option>
+                  <option value="abigail">Abigail</option>
+                  <option value="sofia">Sofia</option>
+                </select>
+              </div>
+              <button onclick="addCharacter()" class="builder-btn builder-btn-add" data-i18n="builder_add">+ Add</button>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="builder-section pt-6 flex items-center justify-between">
+            <button onclick="resetToDefault()" class="builder-btn text-slate-400" data-i18n="builder_reset_default">↺ Reset Default</button>
+            <button onclick="saveSimulator()" class="builder-btn builder-btn-save px-6 py-2 text-base" data-i18n="builder_save_run">▶ Save & Run</button>
+          </div>
+        </div>
+      </div>
       </section>
 
       <!-- DISCLAIMER -->
